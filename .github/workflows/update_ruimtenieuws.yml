@@ -3,11 +3,13 @@ name: Update Ruimtevaart Nieuws
 on:
   schedule:
     - cron: "0 6 * * *"  # Dagelijks om 06:00 UTC
-  workflow_dispatch:   # Hiermee kun je de workflow handmatig starten
+  workflow_dispatch:   # Maakt handmatig starten mogelijk
 
 jobs:
   update-news:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Geef de GitHub Actions bot schrijfpermissies
 
     steps:
       - name: Checkout repository
@@ -31,6 +33,5 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           git add .
-          # Alleen committen als er wijzigingen zijn
           git diff-index --quiet HEAD || git commit -m "Update ruimtevaart nieuws report"
           git push
