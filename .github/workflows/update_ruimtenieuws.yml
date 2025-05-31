@@ -1,0 +1,36 @@
+name: Update Ruimtevaart Nieuws
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # Dagelijks om 06:00 UTC
+  workflow_dispatch:   # Hiermee kun je de workflow handmatig starten
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install feedparser
+
+      - name: Run nieuws script
+        run: |
+          python news_fetcher.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          # Alleen committen als er wijzigingen zijn
+          git diff-index --quiet HEAD || git commit -m "Update ruimtevaart nieuws report"
+          git push
